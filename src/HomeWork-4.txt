@@ -1,0 +1,78 @@
+--1) Вывести всех клиентов из страны Canada
+SELECT *FROM customer where country = 'Canada';
+
+--2) Вывести все страны клиентов
+SELECT country FROM customer;
+
+--3) Вывести количество всех заказов
+SELECT count(*) as count_orders FROM orders;
+
+--4) Вывести максимальную стоимость заказа
+SELEct max(unit_price)as max_price_product FROM product;
+
+--5) Найти сумму всех заказов
+SELECT sum(total_amount)  FROM orders;
+
+--6) Найти сумму всех заказов за 2014 год
+SELECT sum(total_amount)
+FROM orders
+WHERE order_date
+    BETWEEN to_timestamp('Jan 01 2014 ', 'MON DD YYYY')
+    AND to_timestamp('Dec 31 2014 ', 'MON DD YYYY');
+
+--7) Найти среднюю стоимость всех заказов
+SELECT avg(total_amount) FROM orders;
+
+--8) Найти среднюю стоимость всех заказов по каждому клиенту
+SELECT first_name,avg(total_amount)
+FROM customer
+    join orders o
+        on customer.id = o.customer_id
+           group by first_name;
+
+--9) Найти всех клиентов, которые живут в Бразилии или Испании
+SELECT * FROM customer where country = 'Brazil' or country = 'Spain';
+
+--10 Найти все заказы между 2013ым и 2014ым годами, которые стоили меньше 100.00$
+SELECT * FROM orders
+         where order_date
+             between 'Jan 1 2013'
+             and 'Dec 31 2014'
+             and orders.total_amount<100.00;
+
+--11 Найти всех клиентов, которые в одной из стран: Испания, Италия, Германия, Франция. Отсортируйте по странам
+SELECT * FROM customer
+         where customer.country
+            in ('Spain','Italy','Germany','France')
+            order by country;
+
+--12) Найти все страны клиентов, страны которых содержаться в таблице поставщиков
+SELECT c.country as customer_country, s.country as supplier_country
+FROM customer c,supplier s
+where c.country = s.country;
+
+--13) Найти всех клиентов, имена которых начинаются на ‘Jo’
+SELECT first_name FROM customer where first_name LIKE 'Jo%';
+
+--14) Найти всех клиентов, имена которых заканчиваются на ‘a’ и имеют длину ровно 4 символа
+SELECT first_name  FROM customer where first_name LIKE '%a' and customer.first_name like '____';
+
+--15) Найти количество клиентов по странам
+SELECT country,count(country) as count_customer
+FROM customer
+group by country;
+--16) Найти количество клиентов по странам. Вывести в порядке убывания
+SELECT country,count(country) as count_customer
+FROM customer
+group by country order by count(country) DESC ;
+
+--17) Найти общую сумму стоимости заказов и количество заказов по каждому клиенту (customer_id). Отсортировать по сумме
+SELECT sum(total_amount),count(*),orders.customer_id
+FROM orders join customer c on c.id = orders.customer_id
+group by customer_id order by sum(total_amount) desc ;
+
+--18) Найти общую сумму стоимости заказов и количество заказов по каждому клиенту (customer_id), у которых общее количество заказов больше 20ти
+SELECT sum(total_amount),count(*),orders.customer_id
+FROM orders join customer c on c.id = orders.customer_id
+group by orders.customer_id
+HAVING count(*)>20 ;
